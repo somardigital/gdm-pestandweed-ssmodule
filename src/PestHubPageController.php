@@ -8,7 +8,7 @@ class PestHubPageController extends \PageController
 {
     public function getPestContent() {
         Requirements::javascript(
-            'gdmedia/pw: client/pwscript.js'
+            'gdmedia/pestsandweeds: client/pwscript.js'
         );
         return PestHub::getPestContent();
     }
