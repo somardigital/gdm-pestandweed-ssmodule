@@ -31,12 +31,16 @@ class PestHubPageController extends \PageController
     * depending on the query
     */
     public function getPestContent() {
-        Requirements::javascript('https://pw.gurudigital.nz/WebAPI/PanelScript?organisationId=4');
-        Requirements::css('https://pw.gurudigital.nz/theme/styles/webapi.css');
-        Requirements::javascript('gurudigital/pesthub: client/pwscript.js');
         $url = $this->getUrl();
         $pestHub = new PestHub();
-        return $pestHub->getPestContent($url);
+        $data = $pestHub->getPestData($url);
+        $result = $pestHub->getPestContent($url);
+        if (!property_exists($data, "Error")) { 
+            Requirements::javascript('https://pw.gurudigital.nz/WebAPI/PanelScript?organisationId=4');
+            Requirements::css('https://pw.gurudigital.nz/theme/styles/webapi.css');
+            Requirements::javascript('gurudigital/pesthub: client/pwscript.js');
+        }
+        return $result;
     }
 }
 

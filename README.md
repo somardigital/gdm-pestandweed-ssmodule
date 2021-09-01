@@ -17,7 +17,7 @@ composer require gurudigital/pesthub
 
 ## Configuration:
 ```yml
-gurudigital/pesthub\PestHub:
+gurudigital\pesthub\PestHub:
   organisationid: [Your Organisation ID]
   apikey: [Your API Key]
 ```
@@ -32,3 +32,9 @@ $url = "[URL of Pest Hub Page]";
 $pestHub = new PestHub();
 return $pestHub->getPestContent($url);
 ```
+
+## Errors
+
+Incorrect configuration - Check Configuration for correct path, Orgainsation ID and apikey
+
+Invalid API Key - Check Configuration for correct Orgainsation ID and apikey

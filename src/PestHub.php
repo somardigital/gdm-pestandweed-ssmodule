@@ -54,6 +54,7 @@ class PestHub {
     */
     public function getPestData($url) {
         $refresh = false;
+        $data = json_decode("{\"Error\":\"Incorrect configuration\"}");
         $panelsFile = sys_get_temp_dir() . "/gdmediapestandweedsdata.json";
         $fileexists = file_exists($panelsFile);
         if ($fileexists) {
@@ -72,18 +73,29 @@ class PestHub {
             curl_setopt($ch, CURLOPT_HTTPHEADER, ["apikey:" . $apiKey]);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_FAILONERROR, true);
             $output = curl_exec($ch);
+            $ok = true;
             if (curl_errno($ch)) {
+                $ok = false;
                 if ($fileexists) {
                     $output = file_get_contents($panelsFile);
                 }                
+            } else {
+                $data = json_decode($output);
+                if (property_exists($data, "Error")) {
+                    $ok = false;
+                }
             }
             curl_close($ch);
-            file_put_contents($panelsFile, $output, LOCK_EX);
+            if ($ok) {
+                file_put_contents($panelsFile, $output, LOCK_EX);
+                $data = json_decode($output);
+            }
         } else {
             $output = file_get_contents($panelsFile);
+            $data = json_decode($output);
         }
-        $data = json_decode($output);
         return $data;
     }
 
@@ -97,47 +109,50 @@ class PestHub {
     public function getPestContent($url) {
         $content = "";
         $data = PestHub::getPestData($url);
-        $pest = PestHub::getRequestedPest($url);
-        if ($pest != null) {
-            $content = "<div id=\"pw-temp\">";
-            $content .= "<h1>" . $pest->CommonName . "</h1>";
-            $content .= "<h2>" . $pest->ScientificNames . "</h2>";
-            $content .= "<div>" . $pest->Summary . "</div>";
-            if ($pest->PrimaryImageThumbUrl) {
-                $content .= "<div><img src=\"" . $pest->PrimaryImageThumbUrl . "\" alt=\"" . $pest->CommonName . "\"/></div>";
-            }
-            $content .= "</div>";
+        if (property_exists($data, "Error")) {
+            $content = "<div style=\"color:red;\">" . $data->Error . "</div>";
         } else {
-            $content = "<div id=\"pw-temp\">\n";
-            $content .= "<div class=\"pw-container-fluid\">\n";
-            $content .= " <div class=\"pw-row pw-no-gutters\">\n";
-            foreach ($data as $item)
-            {
-                $content .= "<div class=\"pw-col-auto pw-org-col\">\n";
-                $content .= " <div class=\"pw-organism\" data-id=\"380\">\n";
-                $content .= "  <a class=\"pw-link\" href=\"" . $item->Url . "\">\n";
-                $content .= "   <div class=\"pw-organism-inner\">\n";
-                if ($item->PrimaryImageThumbUrl) {
-                    $content .= "     <div class=\"pw-image\">\n";
-                    $content .= "       <img src=\"" . $item->PrimaryImageThumbUrl . "\" alt=\"" . htmlentities($item->CommonName) . "\"/>\n";
-                    $content .= "     </div>\n";
+            $pest = PestHub::getRequestedPest($url);
+            if ($pest != null) {
+                $content = "<div id=\"pw-temp\">";
+                $content .= "<h1>" . $pest->CommonName . "</h1>";
+                $content .= "<h2>" . $pest->ScientificNames . "</h2>";
+                $content .= "<div>" . $pest->Summary . "</div>";
+                if ($pest->PrimaryImageThumbUrl) {
+                    $content .= "<div><img src=\"" . $pest->PrimaryImageThumbUrl . "\" alt=\"" . $pest->CommonName . "\"/></div>";
                 }
-                $content .= "     <div class=\"pw-content\">\n";
-                $content .= "        <div class=\"pw-title\">" . htmlentities($item->CommonName) . "</div>\n";
-                $content .= "        <div class=\"pw-description\">\n";
-                $content .= htmlentities($item->Summary);
-                $content .= "        </div>\n";
-                $content .= "      </div>\n";
-                $content .= "     </div>\n";
-                $content .= "   </a>\n";
-                $content .= " </div>\n";
-                $content .= "</div>\n";
+                $content .= "</div>";
+            } else {
+                $content = "<div id=\"pw-temp\">\n";
+                $content .= "<div class=\"pw-container-fluid\">\n";
+                $content .= " <div class=\"pw-row pw-no-gutters\">\n";
+                foreach ($data as $item)
+                {
+                    $content .= "<div class=\"pw-col-auto pw-org-col\">\n";
+                    $content .= " <div class=\"pw-organism\" data-id=\"380\">\n";
+                    $content .= "  <a class=\"pw-link\" href=\"" . $item->Url . "\">\n";
+                    $content .= "   <div class=\"pw-organism-inner\">\n";
+                    if ($item->PrimaryImageThumbUrl) {
+                        $content .= "     <div class=\"pw-image\">\n";
+                        $content .= "       <img src=\"" . $item->PrimaryImageThumbUrl . "\" alt=\"" . htmlentities($item->CommonName) . "\"/>\n";
+                        $content .= "     </div>\n";
+                    }
+                    $content .= "     <div class=\"pw-content\">\n";
+                    $content .= "        <div class=\"pw-title\">" . htmlentities($item->CommonName) . "</div>\n";
+                    $content .= "        <div class=\"pw-description\">\n";
+                    $content .= htmlentities($item->Summary);
+                    $content .= "        </div>\n";
+                    $content .= "      </div>\n";
+                    $content .= "     </div>\n";
+                    $content .= "   </a>\n";
+                    $content .= " </div>\n";
+                    $content .= "</div>\n";
+                }
+                $content .= " </div>";
+                $content .= "</div>";
+                $content .= "</div>";
             }
-            $content .= " </div>";
-            $content .= "</div>";
-            $content .= "</div>";
         }
-
         return $content;
     }
 }
