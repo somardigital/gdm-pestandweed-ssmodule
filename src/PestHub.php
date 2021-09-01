@@ -83,7 +83,7 @@ class PestHub {
                 }                
             } else {
                 $data = json_decode($output);
-                if (property_exists($data, "Error")) {
+                if (is_object($data) && property_exists($data, "Error")) {
                     $ok = false;
                 }
             }
@@ -109,7 +109,7 @@ class PestHub {
     public function getPestContent($url) {
         $content = "";
         $data = PestHub::getPestData($url);
-        if (property_exists($data, "Error")) {
+        if (is_object($data) && property_exists($data, "Error")) {
             $content = "<div style=\"color:red;\">" . $data->Error . "</div>";
         } else {
             $pest = PestHub::getRequestedPest($url);

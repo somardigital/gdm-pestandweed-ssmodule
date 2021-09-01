@@ -35,7 +35,7 @@ class PestHubPageController extends \PageController
         $pestHub = new PestHub();
         $data = $pestHub->getPestData($url);
         $result = $pestHub->getPestContent($url);
-        if (!property_exists($data, "Error")) { 
+        if (is_array($data)) { 
             Requirements::javascript('https://pw.gurudigital.nz/WebAPI/PanelScript?organisationId=4');
             Requirements::css('https://pw.gurudigital.nz/theme/styles/webapi.css');
             Requirements::javascript('gurudigital/pesthub: client/pwscript.js');
