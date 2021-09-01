@@ -17,7 +17,7 @@ class PestHub {
         return $result;
     }
 
-    public static function getPestData() {
+    public static function getPestData($url) {
         $refresh = false;
         $panelsFile = sys_get_temp_dir() . "/panels_pw_22.txt";
         if (file_exists($panelsFile)) {
@@ -30,7 +30,7 @@ class PestHub {
         $output = "";
         if ($refresh) {
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, "https://pw.gurudigital.nz/webAPI/GetAllPestsAndWeeds?organisationId=4&baseUrl=https://pesthub.es.govt.nz/");
+            curl_setopt($ch, CURLOPT_URL, "https://pw.gurudigital.nz/webAPI/GetAllPestsAndWeeds?organisationId=4&baseUrl=". $url);
             curl_setopt($ch, CURLOPT_HTTPHEADER, ["apikey:f6553c33-6384-4503-ab01-13f891ba8614"]);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
