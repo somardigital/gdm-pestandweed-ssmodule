@@ -13,7 +13,7 @@ to get Organisation ID and API Key
 
 ## Configuration:
 ```yml
-gdmedia\pestsandweeds\PestHub:
+gurudigital/pesthub\PestHub:
   organisationid: [Your Organisation ID]
   apikey: [Your API Key]
 ```
