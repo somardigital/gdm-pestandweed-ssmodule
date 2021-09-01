@@ -1,6 +1,6 @@
 <?php 
 
-namespace gdmedia\pestsandweeds; 
+namespace gurudigital\pesthub; 
 
 use SilverStripe\View\Requirements;
 
@@ -28,12 +28,12 @@ class PestHubPageController extends \PageController
 
     /*
     * Get HTML of either the list of pests/weeds or the individual pest/weed
-    * depending on the query string
+    * depending on the query
     */
     public function getPestContent() {
         Requirements::javascript('https://pw.gurudigital.nz/WebAPI/PanelScript?organisationId=4');
         Requirements::css('https://pw.gurudigital.nz/theme/styles/webapi.css');
-        Requirements::javascript('gdmedia/pestsandweeds: client/pwscript.js');
+        Requirements::javascript('gurudigital/pesthub: client/pwscript.js');
         $url = $this->getUrl();
         $pestHub = new PestHub();
         return $pestHub->getPestContent($url);

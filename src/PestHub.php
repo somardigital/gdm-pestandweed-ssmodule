@@ -1,5 +1,6 @@
 <?php 
-namespace gdmedia\pestsandweeds; 
+
+namespace gurudigital\pesthub; 
 
 use SilverStripe\Core\Config\Config;
 /*

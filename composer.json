@@ -1,5 +1,5 @@
 {
-    "name": "gurudigital/pestsandweeds",
+    "name": "gurudigital/pesthub",
     "description": "Integration with https://pw.gurudigital.nz/ Pest & Weeds",
     "type": "silverstripe-vendormodule",
     "keywords": [
@@ -18,7 +18,7 @@
     },
     "autoload": {
         "psr-4": {
-            "gurudigital\\pestsandweeds\\": "src/"
+            "gurudigital\\pesthub\\": "src/"
         }
     },
     "extra": {
