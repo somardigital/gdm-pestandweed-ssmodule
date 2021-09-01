@@ -1,4 +1,4 @@
-$.urlParam = function(name){
+window.pwurlParam = function(name){
     var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
     if (results == null){
        return null;
@@ -7,14 +7,14 @@ $.urlParam = function(name){
        return decodeURI(results[1]) || 0;
     }
 }
-if ($.urlParam('sort') !== null || $.urlParam('tags') !== null || $.urlParam('classification') !== null|| $.urlParam('pwid') !== null) {
-    $("#pw-temp").css("display", "none");
-    $("#pw-panel").show();
+if (window.pwurlParam('sort') !== null || window.pwurlParam('tags') !== null || window.pwurlParam('classification') !== null|| window.pwurlParam('pwid') !== null) {
+    document.getElementById("pw-temp").style = "display:none;";
+    document.getElementById("pw-panel").style = "";
 } else {
-    $(document).on("click", function(e) {
-        $("#pw-temp").css("display", "none");
-        $("#pw-panel").show();
-        if ($(e.target).hasClass("pw-results-link")) {
+    document.addEventListener("click", function(e) {
+        document.getElementById("pw-temp").style = "display:none;";
+        document.getElementById("pw-panel").style = "";
+        if (e.target.classList.contains("pw-results-link")) {
             document.getElementById("pw-panel").scrollIntoView();
         }
     });
