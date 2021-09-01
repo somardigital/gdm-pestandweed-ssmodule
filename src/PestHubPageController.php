@@ -14,7 +14,10 @@ class PestHubPageController extends \PageController
         // Append the host(domain name, ip) to the URL.   
         $url.= $_SERVER['HTTP_HOST'];   
         // Append the requested resource location to the URL   
-        $url.= $_SERVER['REQUEST_URI'];    
+        $url.= strtok($_SERVER["REQUEST_URI"], '?');   
+        if(substr($url, -1) != '/') {
+            $url.="/";
+        }
         return $url;
     }
 

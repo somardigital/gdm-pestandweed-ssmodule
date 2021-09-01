@@ -3,9 +3,9 @@ namespace gdmedia\pestsandweeds;
 
 class PestHub {
 
-    private static function getRequestedPest() {
+    private static function getRequestedPest($url) {
         $result = null;
-        $data = PestHub::getPestData();
+        $data = PestHub::getPestData($url);
         if (isset($_GET["pwid"])) {
             foreach ($data as $item)
             {
@@ -56,10 +56,10 @@ class PestHub {
         return $result;
     }
 
-    public static function getPestContent() {
+    public static function getPestContent($url) {
         $content = "";
-        $data = PestHub::getPestData();
-        $pest = PestHub::getRequestedPest();
+        $data = PestHub::getPestData($url);
+        $pest = PestHub::getRequestedPest($url);
         if ($pest != null) {
             $content = "<div id=\"pw-temp\">";
             $content .= "<h1>" . $pest->CommonName . "</h1>";
@@ -77,7 +77,7 @@ class PestHub {
             {
                 $content .= "<div class=\"pw-col-auto pw-org-col\">\n";
                 $content .= " <div class=\"pw-organism\" data-id=\"380\">\n";
-                $content .= "  <a class=\"pw-link\" href=\"/?pwsystem=true&amp;pwid=" . $item->Id . "&amp;sort=alpha\">\n";
+                $content .= "  <a class=\"pw-link\" href=\"" . $item->Url . "\">\n";
                 $content .= "   <div class=\"pw-organism-inner\">\n";
                 if ($item->PrimaryImageThumbUrl) {
                     $content .= "     <div class=\"pw-image\">\n";
