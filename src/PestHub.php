@@ -2,9 +2,25 @@
 namespace gdmedia\pestsandweeds; 
 
 use SilverStripe\Core\Config\Config;
-
+/*
+* Access the pest & weeds API 
+*/
 class PestHub {
-
+    /*
+    * Get a pest when pwid is in query string of url
+    *
+    * @param string Request url
+    *
+    * @return object {
+    *   'Id' => int,
+    *   'CommonName' => string,
+    *   'ScientificNames' => string,
+    *   'Summary' => string,
+    *   'Url' => string,
+    *   'PrimaryImageThumbUrl' => string,
+    *   'Content' => string
+    * }
+    */
     private function getRequestedPest($url) {
         $result = null;
         $data = PestHub::getPestData($url);
@@ -19,9 +35,25 @@ class PestHub {
         return $result;
     }
 
+    /* 
+    * Get Pest and weed data from API
+    * Cache in temp directory for 1 hour 
+    *
+    * @param string url The full url of the Pest Hub page
+    *
+    * @return array [
+    *   'Id' => int,
+    *   'CommonName' => string,
+    *   'ScientificNames' => string,
+    *   'Summary' => string,
+    *   'Url' => string,
+    *   'PrimaryImageThumbUrl' => string,
+    *   'Content' => string
+    * ]
+    */
     public function getPestData($url) {
         $refresh = false;
-        $panelsFile = sys_get_temp_dir() . "/panels_pw_22.txt";
+        $panelsFile = sys_get_temp_dir() . "/gdmediapestandweedsdata.json";
         $fileexists = file_exists($panelsFile);
         if ($fileexists) {
             if (time()-filemtime($panelsFile) > 3600) {
@@ -54,6 +86,13 @@ class PestHub {
         return $data;
     }
 
+    /* 
+    * Get HTML of list of Pests & Weeds
+    *
+    * @param string url The full url of the Pest Hub page
+    *
+    * @return string HTML
+    */
     public function getPestContent($url) {
         $content = "";
         $data = PestHub::getPestData($url);

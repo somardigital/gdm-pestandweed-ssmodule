@@ -4,25 +4,13 @@ Enables the display of Pests and Weeds from https://pw.gurudigital.nz/
 
 Using a PestHub Page
 
-## Installation:
+## Introduction
 
-1. Add repositories section to composer.json
-```json
-    "repositories": [{
-	"type": "vcs",
-        "url": "git@github.com:guru-digital/gdm-pestandweed-ssmodule.git"
-    }],
-```
-2. Add to require section of composer.json
-```json
-    "require": {
-        "php": "^7.1 || ^8",
-        "silverstripe/recipe-plugin": "^1.2",
-        "silverstripe/recipe-cms": "4.8.0@stable",
-        ... etc ...
-        "gdmedia/pestsandweeds": "1.x-dev"
-    },
-```
+You must have an account on https://pw.gurudigital.nz/
+Contact info@gurudigital.nz to arrange access
+After login navigate to - Settings & Users - Web API
+to get Organisation ID and API Key 
+
 ## Configuration:
 ```yml
 gdmedia\pestsandweeds\PestHub:
