@@ -2,7 +2,7 @@
 
 Enables the display of Pests and Weeds from https://pw.gurudigital.nz/ 
 
-##Installation:
+## Installation:
 
 1. Add repositories section to composer.json
 ```json
@@ -23,7 +23,7 @@ Enables the display of Pests and Weeds from https://pw.gurudigital.nz/
         "gdmedia/pestsandweeds": "1.x-dev"
     },
 ```
-##Configuration:
+## Configuration:
 ```yml
 gdmedia\pestsandweeds\PestHub:
   organisationid: [Your Organisation ID]
