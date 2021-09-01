@@ -29,3 +29,14 @@ gdmedia\pestsandweeds\PestHub:
   organisationid: [Your Organisation ID]
   apikey: [Your API Key]
 ```
+
+## Pest summary data
+
+Get summary data for all pests and weeds 
+E.g. for adding urls to search index or sitemap
+
+```php
+$url = "[URL of Pest Hub Page]";
+$pestHub = new PestHub();
+return $pestHub->getPestContent($url);
+```
