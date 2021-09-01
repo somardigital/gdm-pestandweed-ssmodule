@@ -6,12 +6,10 @@ Enables the display of Pests and Weeds from https://pw.gurudigital.nz/
 
 1. Add repositories section to composer.json
 ```json
-    "repositories": [
-        {
-			"type": "vcs",
-        	"url": "git@github.com:guru-digital/gdm-pestandweed-ssmodule.git"
-		}
-    ],
+    "repositories": [{
+	"type": "vcs",
+        "url": "git@github.com:guru-digital/gdm-pestandweed-ssmodule.git"
+    }],
 ```
 2. Add to require section of composer.json
 ```json
