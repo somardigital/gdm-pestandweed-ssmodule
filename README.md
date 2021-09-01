@@ -2,6 +2,8 @@
 
 Enables the display of Pests and Weeds from https://pw.gurudigital.nz/ 
 
+Using a PestHub Page
+
 ## Installation:
 
 1. Add repositories section to composer.json
