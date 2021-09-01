@@ -1,5 +1,5 @@
 <?php 
-namespace gdmedia\pestsandweedss; 
+namespace gdmedia\pestsandweeds; 
 
 class PestHub {
 
