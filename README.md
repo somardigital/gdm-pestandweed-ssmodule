@@ -14,6 +14,7 @@ Enables the display of Pests and Weeds from https://pw.gurudigital.nz/
     ],
 ```
 2. Add to require section of composer.json
+```json
     "require": {
         "php": "^7.1 || ^8",
         "silverstripe/recipe-plugin": "^1.2",
@@ -21,9 +22,10 @@ Enables the display of Pests and Weeds from https://pw.gurudigital.nz/
         ... etc ...
         "gdmedia/pestsandweeds": "1.x-dev"
     },
-
+```
 ##Configuration:
-
+```yml
 gdmedia\pestsandweeds\PestHub:
   organisationid: [Your Organisation ID]
   apikey: [Your API Key]
+```
