@@ -35,6 +35,6 @@ return $pestHub->getPestContent($url);
 
 ## Errors
 
-Incorrect configuration - Check Configuration for correct path, Orgainsation ID and apikey
+Incorrect configuration - Check Configuration for correct path, Organisation ID and apikey
 
-Invalid API Key - Check Configuration for correct Orgainsation ID and apikey
+Invalid API Key - Check Configuration for correct Organisation ID and apikey
