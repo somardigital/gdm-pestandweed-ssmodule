@@ -11,6 +11,10 @@ Contact info@gurudigital.nz to arrange access
 After login navigate to - Settings & Users - Web API
 to get Organisation ID and API Key 
 
+## Installation
+
+composer require gurudigital/pesthub
+
 ## Configuration:
 ```yml
 gurudigital/pesthub\PestHub:
