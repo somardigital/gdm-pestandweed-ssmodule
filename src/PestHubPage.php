@@ -1,6 +1,6 @@
 <?php 
 
-namespace gdmedia\pw; 
+namespace gdmedia\pestsandweeds; 
 
 class PestHubPage extends \Page
 {

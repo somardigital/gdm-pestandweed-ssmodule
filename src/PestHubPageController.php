@@ -1,6 +1,6 @@
 <?php 
 
-namespace gdmedia\pw; 
+namespace gdmedia\pestsandweeds; 
 
 use SilverStripe\View\Requirements;
 
