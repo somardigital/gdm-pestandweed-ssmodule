@@ -2,6 +2,7 @@
 
 namespace gdmedia\pestsandweeds; 
 
+use gdmedia\pestsandweeds\PestHub;
 use SilverStripe\View\Requirements;
 
 class PestHubPageController extends \PageController 
