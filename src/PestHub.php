@@ -1,9 +1,11 @@
 <?php 
 namespace gdmedia\pestsandweeds; 
 
+use SilverStripe\Core\Config\Config;
+
 class PestHub {
 
-    private static function getRequestedPest($url) {
+    private function getRequestedPest($url) {
         $result = null;
         $data = PestHub::getPestData($url);
         if (isset($_GET["pwid"])) {
@@ -17,10 +19,11 @@ class PestHub {
         return $result;
     }
 
-    public static function getPestData($url) {
+    public function getPestData($url) {
         $refresh = false;
         $panelsFile = sys_get_temp_dir() . "/panels_pw_22.txt";
-        if (file_exists($panelsFile)) {
+        $fileexists = file_exists($panelsFile);
+        if ($fileexists) {
             if (time()-filemtime($panelsFile) > 3600) {
                 $refresh = true;
             }
@@ -30,13 +33,17 @@ class PestHub {
         $output = "";
         if ($refresh) {
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, "https://pw.gurudigital.nz/webAPI/GetAllPestsAndWeeds?organisationId=4&baseUrl=". $url);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ["apikey:f6553c33-6384-4503-ab01-13f891ba8614"]);
+            $orgId = Config::inst()->get(PestHub::class, 'organisationid');
+            $apiKey = Config::inst()->get(PestHub::class, 'apikey');
+            curl_setopt($ch, CURLOPT_URL, "https://pw.gurudigital.nz/webAPI/GetAllPestsAndWeeds?organisationId=" . $orgId . "&baseUrl=". $url);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ["apikey:" . $apiKey]);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             $output = curl_exec($ch);
             if (curl_errno($ch)) {
-                $error = curl_error($ch);
+                if ($fileexists) {
+                    $output = file_get_contents($panelsFile);
+                }                
             }
             curl_close($ch);
             file_put_contents($panelsFile, $output, LOCK_EX);
@@ -47,16 +54,7 @@ class PestHub {
         return $data;
     }
 
-    private static function getPestTitle() {
-        $result = "";
-        $pest = getRequestedPest();
-        if ($pest != null) {
-            $result = $pest->CommonName . " - ";
-        }
-        return $result;
-    }
-
-    public static function getPestContent($url) {
+    public function getPestContent($url) {
         $content = "";
         $data = PestHub::getPestData($url);
         $pest = PestHub::getRequestedPest($url);

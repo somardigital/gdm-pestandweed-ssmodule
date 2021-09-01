@@ -6,6 +6,8 @@ use SilverStripe\View\Requirements;
 
 class PestHubPageController extends \PageController 
 {
+    
+
     public function getUrl() {
         if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')   
             $url = "https://";   
@@ -26,7 +28,8 @@ class PestHubPageController extends \PageController
         Requirements::css('https://pw.gurudigital.nz/theme/styles/webapi.css');
         Requirements::javascript('gdmedia/pestsandweeds: client/pwscript.js');
         $url = $this->getUrl();
-        return PestHub::getPestContent($url);
+        $pestHub = new PestHub();
+        return $pestHub->getPestContent($url);
     }
 }
 
