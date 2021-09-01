@@ -2,6 +2,7 @@
 
 namespace gurudigital\pesthub; 
 
+use SilverStripe\Core\Config\Config;
 use SilverStripe\View\Requirements;
 
 class PestHubPageController extends \PageController 
@@ -36,7 +37,8 @@ class PestHubPageController extends \PageController
         $data = $pestHub->getPestData($url);
         $result = $pestHub->getPestContent($url);
         if (is_array($data)) { 
-            Requirements::javascript('https://pw.gurudigital.nz/WebAPI/PanelScript?organisationId=4');
+            $orgId = Config::inst()->get(PestHub::class, 'organisationid');
+            Requirements::javascript('https://pw.gurudigital.nz/WebAPI/PanelScript?organisationId='. $orgId);
             Requirements::css('https://pw.gurudigital.nz/theme/styles/webapi.css');
             Requirements::javascript('gurudigital/pesthub: client/pwscript.js');
         }
