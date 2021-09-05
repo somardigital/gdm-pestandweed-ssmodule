@@ -3,10 +3,15 @@
 namespace gurudigital\pesthub; 
 
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Flushable;
+
 /*
 * Access the pest & weeds API 
 */
-class PestHub {
+class PestHub implements Flushable {
+    const cacheFile = TEMP_PATH . "/" . "gdmediapestandweedsdata.json";
+
     /*
     * Get a pest when pwid is in query string of url
     *
@@ -24,16 +29,26 @@ class PestHub {
     */
     private function getRequestedPest($url) {
         $result = null;
-        $data = PestHub::getPestData($url);
+        $data = $this->getPestData($url);
         if (isset($_GET["pwid"])) {
-            foreach ($data as $item)
-            {
-                if ($item->Id . "" == $_GET["pwid"]) {
-                    $result = $item;
+            $id = (int)$_GET["pwid"];
+            if ($id > 0) {
+                foreach ($data as $item)
+                {
+                    if ($item->Id == $id) {
+                        $result = $item;
+                        break;
+                    }
                 }
             }
         }
         return $result;
+    }
+
+    public static function flush(){
+        if (!unlink(PestHub::cacheFile)) {
+            throw new Exception("Unable to delete PestHub cache file");
+        }
     }
 
     /* 
@@ -54,11 +69,10 @@ class PestHub {
     */
     public function getPestData($url) {
         $refresh = false;
-        $data = json_decode("{\"Error\":\"Incorrect configuration\"}");
-        $panelsFile = sys_get_temp_dir() . "/gdmediapestandweedsdata.json";
-        $fileexists = file_exists($panelsFile);
+        $data = (object)["Error"=>"Incorrect configuration"];
+        $fileexists = file_exists(PestHub::cacheFile);
         if ($fileexists) {
-            if (time()-filemtime($panelsFile) > 3600) {
+            if (time()-filemtime(PestHub::cacheFile) > 3600) {
                 $refresh = true;
             }
         } else {
@@ -72,14 +86,14 @@ class PestHub {
             curl_setopt($ch, CURLOPT_URL, "https://pw.gurudigital.nz/webAPI/GetAllPestsAndWeeds?organisationId=" . $orgId . "&baseUrl=". $url);
             curl_setopt($ch, CURLOPT_HTTPHEADER, ["apikey:" . $apiKey]);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, !Director::isDev());
             curl_setopt($ch, CURLOPT_FAILONERROR, true);
             $output = curl_exec($ch);
             $ok = true;
             if (curl_errno($ch)) {
                 $ok = false;
                 if ($fileexists) {
-                    $output = file_get_contents($panelsFile);
+                    $output = file_get_contents(PestHub::cacheFile);
                 }                
             } else {
                 $data = json_decode($output);
@@ -89,11 +103,11 @@ class PestHub {
             }
             curl_close($ch);
             if ($ok) {
-                file_put_contents($panelsFile, $output, LOCK_EX);
+                file_put_contents(PestHub::cacheFile, $output, LOCK_EX);
                 $data = json_decode($output);
             }
         } else {
-            $output = file_get_contents($panelsFile);
+            $output = file_get_contents(PestHub::cacheFile);
             $data = json_decode($output);
         }
         return $data;
