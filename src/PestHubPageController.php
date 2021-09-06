@@ -4,6 +4,9 @@ namespace gurudigital\pesthub;
 
 use SilverStripe\Core\Config\Config;
 use SilverStripe\View\Requirements;
+use SilverStripe\Core\Injector\Injector;
+use Psr\Log\LoggerInterface;
+use SilverStripe\Control\Director;
 
 class PestHubPageController extends \PageController 
 {
@@ -13,14 +16,7 @@ class PestHubPageController extends \PageController
     * @return string Url 
     */
     public function getUrl() {
-        if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')   
-            $url = "https://";   
-        else  
-            $url = "http://";   
-        // Append the host(domain name, ip) to the URL.   
-        $url.= $_SERVER['HTTP_HOST'];   
-        // Append the requested resource location to the URL   
-        $url.= strtok($_SERVER["REQUEST_URI"], '?');   
+        $url = Director::absoluteUrl($this->getRequest()->getUrl());
         if(substr($url, -1) != '/') {
             $url.="/";
         }
@@ -33,10 +29,19 @@ class PestHubPageController extends \PageController
     */
     public function getPestContent() {
         $url = $this->getUrl();
-        $pestHub = new PestHub();
-        $data = $pestHub->getPestData($url);
+        $pestHub = null;
+        try {
+            $pestHub = PestHub::fromUrl($url);
+        } catch (PestHubException $ex) {
+            if ($ex->data) {    
+                $pestHub = PestHub::fromData($ex->data);
+                Injector::inst()->get(LoggerInterface::class)->error('Pesthub using cached data due to error: '. $ex->getMessage());
+            } else {
+                throw $ex;
+            }
+        }
         $result = $pestHub->getPestContent($url);
-        if (is_array($data)) { 
+        if (is_array($pestHub->data)) { 
             $orgId = Config::inst()->get(PestHub::class, 'organisationid');
             Requirements::javascript('https://pw.gurudigital.nz/WebAPI/PanelScript?organisationId='. $orgId);
             Requirements::css('https://pw.gurudigital.nz/theme/styles/webapi.css');

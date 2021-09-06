@@ -5,12 +5,33 @@ namespace gurudigital\pesthub;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Flushable;
+use SilverStripe\Core\Injector\Injector;
+use Psr\Log\LoggerInterface;
 
 /*
 * Access the pest & weeds API 
 */
 class PestHub implements Flushable {
     const cacheFile = TEMP_PATH . "/" . "gdmediapestandweedsdata.json";
+
+    public $data;
+    private function __construct() {
+
+    }
+
+    public static function fromUrl($url) {
+        $instance = new self();
+        $instance->getPestData($url);
+        return $instance;
+    }
+
+
+    public static function fromData($data) {
+        $instance = new self();
+        $instance->data = $data;
+        return $instance;
+    }
+
 
     /*
     * Get a pest when pwid is in query string of url
@@ -29,11 +50,10 @@ class PestHub implements Flushable {
     */
     private function getRequestedPest($url) {
         $result = null;
-        $data = $this->getPestData($url);
         if (isset($_GET["pwid"])) {
             $id = (int)$_GET["pwid"];
             if ($id > 0) {
-                foreach ($data as $item)
+                foreach ($this->data as $item)
                 {
                     if ($item->Id == $id) {
                         $result = $item;
@@ -46,8 +66,10 @@ class PestHub implements Flushable {
     }
 
     public static function flush(){
-        if (!unlink(PestHub::cacheFile)) {
-            throw new Exception("Unable to delete PestHub cache file");
+        if (file_exists(PestHub::cacheFile)) {
+            if (!unlink(PestHub::cacheFile)) {
+                throw new Exception("Unable to delete PestHub cache file");
+            }
         }
     }
 
@@ -69,10 +91,10 @@ class PestHub implements Flushable {
     */
     public function getPestData($url) {
         $refresh = false;
-        $data = (object)["Error"=>"Incorrect configuration"];
+        $this->data = (object)["Error"=>"Incorrect configuration"];
         $fileexists = file_exists(PestHub::cacheFile);
         if ($fileexists) {
-            if (time()-filemtime(PestHub::cacheFile) > 3600) {
+            if (time()-filemtime(PestHub::cacheFile) > 1) {
                 $refresh = true;
             }
         } else {
@@ -92,25 +114,28 @@ class PestHub implements Flushable {
             $ok = true;
             if (curl_errno($ch)) {
                 $ok = false;
+                $ex = new PestHubException(curl_error($ch));
                 if ($fileexists) {
                     $output = file_get_contents(PestHub::cacheFile);
-                }                
+                    $ex->data = json_decode($output);
+                }            
+                throw $ex;
             } else {
                 $data = json_decode($output);
                 if (is_object($data) && property_exists($data, "Error")) {
-                    $ok = false;
+                    throw new PestHubException($data->Error);
                 }
             }
             curl_close($ch);
             if ($ok) {
                 file_put_contents(PestHub::cacheFile, $output, LOCK_EX);
-                $data = json_decode($output);
+                $this->data = json_decode($output);
             }
         } else {
             $output = file_get_contents(PestHub::cacheFile);
-            $data = json_decode($output);
+            $this->data = json_decode($output);
         }
-        return $data;
+        //return $data;
     }
 
     /* 
@@ -122,9 +147,8 @@ class PestHub implements Flushable {
     */
     public function getPestContent($url) {
         $content = "";
-        $data = PestHub::getPestData($url);
-        if (is_object($data) && property_exists($data, "Error")) {
-            $content = "<div style=\"color:red;\">" . $data->Error . "</div>";
+        if (is_object($this->data) && property_exists($this->data, "Error")) {
+            $content = "<div style=\"color:red;\">" . $this->data->Error . "</div>";
         } else {
             $pest = PestHub::getRequestedPest($url);
             if ($pest != null) {
@@ -140,7 +164,7 @@ class PestHub implements Flushable {
                 $content = "<div id=\"pw-temp\">\n";
                 $content .= "<div class=\"pw-container-fluid\">\n";
                 $content .= " <div class=\"pw-row pw-no-gutters\">\n";
-                foreach ($data as $item)
+                foreach ($this->data as $item)
                 {
                     $content .= "<div class=\"pw-col-auto pw-org-col\">\n";
                     $content .= " <div class=\"pw-organism\" data-id=\"380\">\n";
