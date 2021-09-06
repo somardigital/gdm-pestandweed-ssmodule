@@ -94,7 +94,7 @@ class PestHub implements Flushable {
         $this->data = (object)["Error"=>"Incorrect configuration"];
         $fileexists = file_exists(PestHub::cacheFile);
         if ($fileexists) {
-            if (time()-filemtime(PestHub::cacheFile) > 1) {
+            if (time()-filemtime(PestHub::cacheFile) > 3600) {
                 $refresh = true;
             }
         } else {
